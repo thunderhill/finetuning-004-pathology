@@ -1,0 +1,13 @@
+# Data & artifacts (generated on the MI300X, not version-controlled)
+data/
+checkpoints/
+outputs/
+*.pth
+*.zip
+wandb/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
