@@ -33,6 +33,9 @@ def code(s):
 
 
 def save(name, cells):
+    stem = name.replace(".ipynb", "").replace(".", "")
+    for i, c in enumerate(cells):
+        c["id"] = f"{stem}-{i:02d}"  # nbformat>=4.5 requires a unique cell id
     p = ROOT / name
     with open(p, "w") as f:
         json.dump(nb(cells), f, indent=1)
@@ -54,6 +57,19 @@ Run with `%run shared.ipynb` from the other notebooks. Defines, with no side eff
 * **Helpers** — Grad-CAM (`GradCAMViT`/`GradCAMResNet`), metrics, resume-safe checkpoints.
 
 This file deliberately does **not** download data or build models on import."""),
+
+code(r"""# Dependency bootstrap: auto-install anything missing (covers skipping 00_environment_check).
+# Optional libs (transformers, wandb, gradio, torchstain) are imported lazily where used.
+import importlib.util, subprocess, sys
+_NEED = {"albumentations": "albumentations", "skimage": "scikit-image",
+         "cv2": "opencv-python-headless", "timm": "timm",
+         "sklearn": "scikit-learn", "seaborn": "seaborn", "matplotlib": "matplotlib"}
+_missing = [pkg for mod, pkg in _NEED.items() if importlib.util.find_spec(mod) is None]
+if _missing:
+    print("Installing missing packages:", _missing)
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *_missing], check=False)
+    print("Done. If an import still fails below, restart the kernel and re-run this cell.")
+"""),
 
 code(r"""import os, sys, json, math, time, random, logging, zipfile, urllib.request
 from pathlib import Path

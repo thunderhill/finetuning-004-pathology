@@ -1,0 +1,193 @@
+\begin{thebibliography}{23}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Advanced Micro Devices}(2023)]{amd2023cdna3}
+{Advanced Micro Devices}.
+\newblock Amd cdna 3 architecture: The all-new amd gpu architecture for the
+  modern era of hpc and ai.
+\newblock Technical report, AMD, 2023.
+\newblock White paper.
+
+\bibitem[Ansel et~al.(2024)Ansel, Yang, He, Gimelshein, Jain, Voznesensky, Bao,
+  Bell, Berard, Burovski, et~al.]{ansel2024pytorch2}
+Jason Ansel, Edward Yang, Horace He, Natalia Gimelshein, Animesh Jain, Michael
+  Voznesensky, Bin Bao, Peter Bell, David Berard, Evgeni Burovski, et~al.
+\newblock Pytorch 2: Faster machine learning through dynamic python bytecode
+  transformation and graph compilation.
+\newblock In \emph{Proceedings of the 29th ACM International Conference on
+  Architectural Support for Programming Languages and Operating Systems
+  (ASPLOS)}, pages 929--947, 2024.
+
+\bibitem[Buslaev et~al.(2020)Buslaev, Iglovikov, Khvedchenya, Parinov,
+  Druzhinin, and Kalinin]{buslaev2020albumentations}
+Alexander Buslaev, Vladimir~I Iglovikov, Eugene Khvedchenya, Alex Parinov,
+  Mikhail Druzhinin, and Alexandr~A Kalinin.
+\newblock Albumentations: Fast and flexible image augmentations.
+\newblock \emph{Information}, 11\penalty0 (2):\penalty0 125, 2020.
+
+\bibitem[Caron et~al.(2021)Caron, Touvron, Misra, J{\'e}gou, Mairal,
+  Bojanowski, and Joulin]{caron2021emerging}
+Mathilde Caron, Hugo Touvron, Ishan Misra, Herv{\'e} J{\'e}gou, Julien Mairal,
+  Piotr Bojanowski, and Armand Joulin.
+\newblock Emerging properties in self-supervised vision transformers.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pages 9650--9660, 2021.
+
+\bibitem[Chen et~al.(2024)Chen, Ding, Lu, Williamson, Jaume, Song, Chen, Zhang,
+  Shao, Shaban, et~al.]{chen2024uni}
+Richard~J Chen, Tong Ding, Ming~Y Lu, Drew~FK Williamson, Guillaume Jaume,
+  Andrew~H Song, Bowen Chen, Andrew Zhang, Daniel Shao, Muhammad Shaban, et~al.
+\newblock Towards a general-purpose foundation model for computational
+  pathology.
+\newblock \emph{Nature Medicine}, 30:\penalty0 850--862, 2024.
+
+\bibitem[Dosovitskiy et~al.(2021)Dosovitskiy, Beyer, Kolesnikov, Weissenborn,
+  Zhai, Unterthiner, Dehghani, Minderer, Heigold, Gelly, Uszkoreit, and
+  Houlsby]{dosovitskiy2021image}
+Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn,
+  Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg
+  Heigold, Sylvain Gelly, Jakob Uszkoreit, and Neil Houlsby.
+\newblock An image is worth 16x16 words: Transformers for image recognition at
+  scale.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2021.
+
+\bibitem[Filiot et~al.(2023)Filiot, Ghermi, Olivier, Jacob, Fidon, Mac~Kain,
+  Saillard, and Schiratti]{filiot2023scaling}
+Alexandre Filiot, Ridouane Ghermi, Antoine Olivier, Paul Jacob, Lucas Fidon,
+  Alice Mac~Kain, Charlie Saillard, and Jean-Baptiste Schiratti.
+\newblock Scaling self-supervised learning for histopathology with masked image
+  modeling.
+\newblock \emph{medRxiv}, 2023.
+\newblock \doi{10.1101/2023.07.21.23292757}.
+
+\bibitem[He et~al.(2016)He, Zhang, Ren, and Sun]{he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition (CVPR)}, pages 770--778, 2016.
+
+\bibitem[Kather et~al.(2018)Kather, Halama, and Marx]{kather2018dataset}
+Jakob~Nikolas Kather, Niels Halama, and Alexander Marx.
+\newblock 100,000 histological images of human colorectal cancer and healthy
+  tissue, 2018.
+\newblock \url{https://doi.org/10.5281/zenodo.1214456}.
+
+\bibitem[Kather et~al.(2019)Kather, Krisam, Charoentong, Luedde, Herpel, Weis,
+  Gaiser, Marx, Valous, Ferber, et~al.]{kather2019predicting}
+Jakob~Nikolas Kather, Johannes Krisam, Pornpimol Charoentong, Tom Luedde,
+  Esther Herpel, Cleo-Aron Weis, Timo Gaiser, Alexander Marx, Nektarios~A
+  Valous, Dyke Ferber, et~al.
+\newblock Predicting survival from colorectal cancer histology slides using
+  deep learning: A retrospective multicenter study.
+\newblock \emph{PLOS Medicine}, 16\penalty0 (1):\penalty0 e1002730, 2019.
+
+\bibitem[Liu et~al.(2021)Liu, Lin, Cao, Hu, Wei, Zhang, Lin, and
+  Guo]{liu2021swin}
+Ze~Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and
+  Baining Guo.
+\newblock Swin transformer: Hierarchical vision transformer using shifted
+  windows.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pages 10012--10022, 2021.
+
+\bibitem[Loshchilov and Hutter(2017)]{loshchilov2017sgdr}
+Ilya Loshchilov and Frank Hutter.
+\newblock {SGDR}: Stochastic gradient descent with warm restarts.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2017.
+
+\bibitem[Loshchilov and Hutter(2019)]{loshchilov2019decoupled}
+Ilya Loshchilov and Frank Hutter.
+\newblock Decoupled weight decay regularization.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2019.
+
+\bibitem[Macenko et~al.(2009)Macenko, Niethammer, Marron, Borland, Woosley,
+  Guan, Schmitt, and Thomas]{macenko2009method}
+Marc Macenko, Marc Niethammer, James~S Marron, David Borland, John~T Woosley,
+  Xiaojun Guan, Charles Schmitt, and Nancy~E Thomas.
+\newblock A method for normalizing histology slides for quantitative analysis.
+\newblock In \emph{2009 IEEE International Symposium on Biomedical Imaging
+  (ISBI)}, pages 1107--1110. IEEE, 2009.
+
+\bibitem[Micikevicius et~al.(2018)Micikevicius, Narang, Alben, Diamos, Elsen,
+  Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh, and
+  Wu]{micikevicius2018mixed}
+Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen,
+  David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh
+  Venkatesh, and Hao Wu.
+\newblock Mixed precision training.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2018.
+
+\bibitem[Selvaraju et~al.(2017)Selvaraju, Cogswell, Das, Vedantam, Parikh, and
+  Batra]{selvaraju2017gradcam}
+Ramprasaath~R Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam,
+  Devi Parikh, and Dhruv Batra.
+\newblock Grad-cam: Visual explanations from deep networks via gradient-based
+  localization.
+\newblock In \emph{Proceedings of the IEEE International Conference on Computer
+  Vision (ICCV)}, pages 618--626, 2017.
+
+\bibitem[Steiner et~al.(2022)Steiner, Kolesnikov, Zhai, Wightman, Uszkoreit,
+  and Beyer]{steiner2022how}
+Andreas Steiner, Alexander Kolesnikov, Xiaohua Zhai, Ross Wightman, Jakob
+  Uszkoreit, and Lucas Beyer.
+\newblock How to train your {ViT}? data, augmentation, and regularization in
+  vision transformers.
+\newblock \emph{Transactions on Machine Learning Research (TMLR)}, 2022.
+
+\bibitem[Szegedy et~al.(2016)Szegedy, Vanhoucke, Ioffe, Shlens, and
+  Wojna]{szegedy2016rethinking}
+Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew
+  Wojna.
+\newblock Rethinking the inception architecture for computer vision.
+\newblock In \emph{Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition (CVPR)}, pages 2818--2826, 2016.
+
+\bibitem[Tellez et~al.(2019)Tellez, Litjens, B{\'a}ndi, Bulten, Bokhorst,
+  Ciompi, and van~der Laak]{tellez2019quantifying}
+David Tellez, Geert Litjens, P{\'e}ter B{\'a}ndi, Wouter Bulten, John-Melle
+  Bokhorst, Francesco Ciompi, and Jeroen van~der Laak.
+\newblock Quantifying the effects of data augmentation and stain color
+  normalization in convolutional neural networks for computational pathology.
+\newblock \emph{Medical Image Analysis}, 58:\penalty0 101544, 2019.
+
+\bibitem[Vahadane et~al.(2016)Vahadane, Peng, Sethi, Albarqouni, Wang, Baust,
+  Steiger, Schlitter, Esposito, and Navab]{vahadane2016structure}
+Abhishek Vahadane, Tingying Peng, Amit Sethi, Shadi Albarqouni, Lichao Wang,
+  Maximilian Baust, Katja Steiger, Anna~Melissa Schlitter, Irene Esposito, and
+  Nassir Navab.
+\newblock Structure-preserving color normalization and sparse stain separation
+  for histological images.
+\newblock \emph{IEEE Transactions on Medical Imaging}, 35\penalty0
+  (8):\penalty0 1962--1971, 2016.
+
+\bibitem[Wightman et~al.(2021)Wightman, Touvron, and
+  J{\'e}gou]{wightman2021resnet}
+Ross Wightman, Hugo Touvron, and Herv{\'e} J{\'e}gou.
+\newblock Resnet strikes back: An improved training procedure in timm.
+\newblock \emph{arXiv preprint arXiv:2110.00476}, 2021.
+
+\bibitem[Xu et~al.(2024)Xu, Usuyama, Bagga, Zhang, Rao, Naumann, Wong, Gero,
+  Gonz{\'a}lez, Gu, et~al.]{xu2024gigapath}
+Hanwen Xu, Naoto Usuyama, Jaspreet Bagga, Sheng Zhang, Rajesh Rao, Tristan
+  Naumann, Cliff Wong, Zelalem Gero, Javier Gonz{\'a}lez, Yu~Gu, et~al.
+\newblock A whole-slide foundation model for digital pathology from real-world
+  data.
+\newblock \emph{Nature}, 630:\penalty0 181--188, 2024.
+
+\bibitem[Zhou et~al.(2022)Zhou, Wei, Wang, Shen, Xie, Yuille, and
+  Kong]{zhou2022ibot}
+Jinghao Zhou, Chen Wei, Huiyu Wang, Wei Shen, Cihang Xie, Alan Yuille, and Tao
+  Kong.
+\newblock i{BOT}: Image {BERT} pre-training with online tokenizer.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2022.
+
+\end{thebibliography}
