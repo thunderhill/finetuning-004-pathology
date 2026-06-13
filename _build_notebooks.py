@@ -58,19 +58,24 @@ Run with `%run shared.ipynb` from the other notebooks. Defines, with no side eff
 
 This file deliberately does **not** download data or build models on import."""),
 
-code(r"""# Dependency bootstrap: auto-install anything missing (covers skipping 00_environment_check,
-# and reinstalls each session since the container env is not persistent).
+code(r"""# Dependency bootstrap. The container env is not persistent, so this reinstalls each session.
 import importlib.util, subprocess, sys
-_NEED = {"albumentations": "albumentations", "skimage": "scikit-image",
-         "cv2": "opencv-python-headless", "timm": "timm",
-         "sklearn": "scikit-learn", "seaborn": "seaborn", "matplotlib": "matplotlib",
-         "wandb": "wandb", "transformers": "transformers", "gradio": "gradio",
-         "torchstain": "torchstain"}
-_missing = [pkg for mod, pkg in _NEED.items() if importlib.util.find_spec(mod) is None]
-if _missing:
-    print("Installing missing packages:", _missing)
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *_missing], check=False)
-    print("Done. If an import still fails below, restart the kernel and re-run this cell.")
+
+def _ensure(mod, pkg=None):
+    "Install pkg (pip name) only if module `mod` is missing. Safe to call repeatedly."
+    if importlib.util.find_spec(mod) is None:
+        print(f"installing {pkg or mod} ...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q",
+                        "--root-user-action=ignore", pkg or mod], check=False)
+
+# Core libs needed to import this file and train with timm + W&B:
+for _mod, _pkg in {"albumentations": "albumentations", "skimage": "scikit-image",
+                   "cv2": "opencv-python-headless", "timm": "timm",
+                   "sklearn": "scikit-learn", "seaborn": "seaborn",
+                   "matplotlib": "matplotlib", "wandb": "wandb"}.items():
+    _ensure(_mod, _pkg)
+# transformers (Phikon), gradio (demo) and torchstain (Macenko) are installed on demand by
+# the code that needs them, to avoid pulling heavy/conflicting deps during plain training.
 """),
 
 code(r"""import os, sys, json, math, time, random, logging, zipfile, urllib.request
@@ -206,6 +211,7 @@ code(r"""class MacenkoNormalizer:
     '''Optional Macenko stain normalization (torchstain). For OOD targets / demo uploads.'''
 
     def __init__(self, target_img=None):
+        _ensure("torchstain")
         import torchstain
         self.normalizer = torchstain.normalizers.MacenkoNormalizer(backend="numpy")
         self.fitted = False
@@ -372,6 +378,7 @@ class PhikonClassifier(nn.Module):
 
     def __init__(self, num_classes=9, hidden=512, dropout=0.3, model_id="owkin/phikon"):
         super().__init__()
+        _ensure("transformers")
         from transformers import AutoModel
         try:
             self.backbone = AutoModel.from_pretrained(model_id, attn_implementation="sdpa")
@@ -1007,7 +1014,8 @@ code(r"""def classify(image, use_macenko=False):
     return label_desc, dist, overlay
 """),
 
-code(r"""import gradio as gr
+code(r"""_ensure("gradio")
+import gradio as gr
 
 with gr.Blocks(title="FINETUNING_004 — Stain-Robust Pathology Classifier") as demo:
     gr.Markdown("# FINETUNING_004 — Stain-Robust Pathology Classifier\n"
