@@ -58,12 +58,14 @@ Run with `%run shared.ipynb` from the other notebooks. Defines, with no side eff
 
 This file deliberately does **not** download data or build models on import."""),
 
-code(r"""# Dependency bootstrap: auto-install anything missing (covers skipping 00_environment_check).
-# Optional libs (transformers, wandb, gradio, torchstain) are imported lazily where used.
+code(r"""# Dependency bootstrap: auto-install anything missing (covers skipping 00_environment_check,
+# and reinstalls each session since the container env is not persistent).
 import importlib.util, subprocess, sys
 _NEED = {"albumentations": "albumentations", "skimage": "scikit-image",
          "cv2": "opencv-python-headless", "timm": "timm",
-         "sklearn": "scikit-learn", "seaborn": "seaborn", "matplotlib": "matplotlib"}
+         "sklearn": "scikit-learn", "seaborn": "seaborn", "matplotlib": "matplotlib",
+         "wandb": "wandb", "transformers": "transformers", "gradio": "gradio",
+         "torchstain": "torchstain"}
 _missing = [pkg for mod, pkg in _NEED.items() if importlib.util.find_spec(mod) is None]
 if _missing:
     print("Installing missing packages:", _missing)
