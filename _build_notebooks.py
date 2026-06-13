@@ -657,7 +657,16 @@ md(r"""# 01 — Data: download, EDA, augmentation preview
 Downloads NCT-CRC-HE-100K (train) + CRC-VAL-HE-7K (val) into `PERSIST_DIR/data` (once),
 shows the class distribution, and previews the Albumentations pipeline incl. `HEDStainJitter`."""),
 
-code(r"""%run shared.ipynb
+code(r"""# Locate shared.ipynb regardless of the kernel's working directory, then run it.
+from pathlib import Path as _P
+_sh = next((p for p in [_P.cwd() / "shared.ipynb",
+                        _P("/workspace/shared/ft004/shared.ipynb")] if p.exists()), None)
+if _sh is None:
+    _hits = list(_P.cwd().rglob("shared.ipynb")) or list(_P("/workspace").rglob("shared.ipynb"))
+    _sh = _hits[0] if _hits else None
+assert _sh, "shared.ipynb not found - keep it beside the notebooks or in /workspace/shared/ft004"
+print("running", _sh)
+get_ipython().run_line_magic("run", str(_sh))
 import os
 from pathlib import Path
 PERSIST_DIR = Path(os.environ.get("PERSIST_DIR", "/workspace/shared/ft004"))
@@ -728,7 +737,16 @@ the key to spanning the three 6-hour GPU windows.
 Suggested runs: Day 1 `resnet50` then `vit_b`; Day 2 `vit_l` (hero), plus `vit_l` with
 `use_stain_aug=False` for the ablation, plus `phikon`."""),
 
-code(r"""%run shared.ipynb
+code(r"""# Locate shared.ipynb regardless of the kernel's working directory, then run it.
+from pathlib import Path as _P
+_sh = next((p for p in [_P.cwd() / "shared.ipynb",
+                        _P("/workspace/shared/ft004/shared.ipynb")] if p.exists()), None)
+if _sh is None:
+    _hits = list(_P.cwd().rglob("shared.ipynb")) or list(_P("/workspace").rglob("shared.ipynb"))
+    _sh = _hits[0] if _hits else None
+assert _sh, "shared.ipynb not found - keep it beside the notebooks or in /workspace/shared/ft004"
+print("running", _sh)
+get_ipython().run_line_magic("run", str(_sh))
 import os
 from pathlib import Path
 PERSIST_DIR = Path(os.environ.get("PERSIST_DIR", "/workspace/shared/ft004"))
@@ -890,7 +908,16 @@ Loads a trained checkpoint and produces: accuracy / **macro-F1** / per-class F1,
 matrix** PNG, the **OOD stain-shift ablation** (the "−15.7% → −1.7%" story), and **Grad-CAM**
 overlays per class."""),
 
-code(r"""%run shared.ipynb
+code(r"""# Locate shared.ipynb regardless of the kernel's working directory, then run it.
+from pathlib import Path as _P
+_sh = next((p for p in [_P.cwd() / "shared.ipynb",
+                        _P("/workspace/shared/ft004/shared.ipynb")] if p.exists()), None)
+if _sh is None:
+    _hits = list(_P.cwd().rglob("shared.ipynb")) or list(_P("/workspace").rglob("shared.ipynb"))
+    _sh = _hits[0] if _hits else None
+assert _sh, "shared.ipynb not found - keep it beside the notebooks or in /workspace/shared/ft004"
+print("running", _sh)
+get_ipython().run_line_magic("run", str(_sh))
 import os
 from pathlib import Path
 PERSIST_DIR = Path(os.environ.get("PERSIST_DIR", "/workspace/shared/ft004"))
@@ -973,7 +1000,16 @@ md(r"""# 04 — Gradio demo (CPU)
 Interactive demo for the submission: upload an H&E patch -> predicted class + confidence +
 full 9-class distribution + Grad-CAM overlay. Runs on **CPU** to preserve the GPU budget."""),
 
-code(r"""%run shared.ipynb
+code(r"""# Locate shared.ipynb regardless of the kernel's working directory, then run it.
+from pathlib import Path as _P
+_sh = next((p for p in [_P.cwd() / "shared.ipynb",
+                        _P("/workspace/shared/ft004/shared.ipynb")] if p.exists()), None)
+if _sh is None:
+    _hits = list(_P.cwd().rglob("shared.ipynb")) or list(_P("/workspace").rglob("shared.ipynb"))
+    _sh = _hits[0] if _hits else None
+assert _sh, "shared.ipynb not found - keep it beside the notebooks or in /workspace/shared/ft004"
+print("running", _sh)
+get_ipython().run_line_magic("run", str(_sh))
 import os
 from pathlib import Path
 import numpy as np
