@@ -1,0 +1,56 @@
+[
+  {
+    "true": "ADI",
+    "pred": "ADI",
+    "confidence": 0.9045588374137878,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/ADI/ADI-TCGA-AAICEQFN.tif"
+  },
+  {
+    "true": "BACK",
+    "pred": "BACK",
+    "confidence": 0.91002357006073,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/BACK/BACK-TCGA-AARRNSTS.tif"
+  },
+  {
+    "true": "DEB",
+    "pred": "DEB",
+    "confidence": 0.9007143974304199,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/DEB/DEB-TCGA-AANNAWLE.tif"
+  },
+  {
+    "true": "LYM",
+    "pred": "LYM",
+    "confidence": 0.8896002173423767,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/LYM/LYM-TCGA-AAWGSCHH.tif"
+  },
+  {
+    "true": "MUC",
+    "pred": "MUC",
+    "confidence": 0.9056251049041748,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/MUC/MUC-TCGA-AADHFQAT.tif"
+  },
+  {
+    "true": "MUS",
+    "pred": "MUS",
+    "confidence": 0.9072312712669373,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/MUS/MUS-TCGA-AASRLCCT.tif"
+  },
+  {
+    "true": "NORM",
+    "pred": "NORM",
+    "confidence": 0.8923547267913818,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/NORM/NORM-TCGA-AASSYQPA.tif"
+  },
+  {
+    "true": "STR",
+    "pred": "STR",
+    "confidence": 0.9086652994155884,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/STR/STR-TCGA-AAMALCER.tif"
+  },
+  {
+    "true": "TUM",
+    "pred": "TUM",
+    "confidence": 0.9058079123497009,
+    "file": "/workspace/shared/ft004/data/CRC-VAL-HE-7K/CRC-VAL-HE-7K/TUM/TUM-TCGA-AAHIDTWA.tif"
+  }
+]

@@ -3,9 +3,9 @@
 % Compile:  pdflatex main  ->  bibtex main  ->  pdflatex main  ->  pdflatex main
 %
 % NOTE ON NUMBERS: baseline rows in Table 2 are cited from the published
-% literature. Rows marked "(ours)" are PROJECTED TARGETS pending the full
-% MI300X evaluation campaign and MUST be replaced with measured values before
-% any real submission. Search this file for "TODO" to find every such cell.
+% literature. Rows marked "(ours)" report measured results from the full
+% MI300X training + evaluation campaign (5 models on NCT-CRC-HE-100K /
+% CRC-VAL-HE-7K; see outputs/*_metrics.json).
 % ============================================================================
 \documentclass[11pt]{article}
 
@@ -22,11 +22,6 @@
 \newcommand{\midrule}{\noalign{\smallskip}\hline\noalign{\smallskip}}
 \newcommand{\bottomrule}{\noalign{\smallskip}\hline}
 \newcommand{\cmidrulex}[1]{\cline{#1}}
-
-% Lightweight figure placeholder so the manuscript compiles before assets exist.
-% Replace each \fakefig with \includegraphics{...} once the PNGs are produced.
-\newcommand{\fakefig}[2]{%
-  \fbox{\begin{minipage}[c][#2][c]{0.92\linewidth}\centering\itshape\small #1\end{minipage}}}
 
 \title{\textbf{Stain-Robust Histology Classification at Scale:\\
 Full Fine-Tuning of Vision Transformers on a Single AMD MI300X}}
@@ -57,10 +52,10 @@ without gradient checkpointing or layer freezing, with graph compilation via
 \texttt{torch.compile}. To quantify deployment robustness we introduce a controlled
 out-of-distribution (OOD) stain-shift protocol and report the resulting accuracy degradation
 with and without stain augmentation. We further provide gradient-based (Grad-CAM) explanations to
-verify that predictions attend to clinically meaningful structures. Our results indicate that
-stain augmentation reduces the OOD accuracy drop of the strongest model by roughly an order of
-magnitude, with negligible cost to in-distribution accuracy. Code and configuration are released
-to support reproduction.
+verify that predictions attend to clinically meaningful structures. Our results show that
+stain augmentation reduces the OOD accuracy drop of ViT-L/16 from 44.0 to 12.9 points (a
+$3.4\times$ reduction), with negligible cost to in-distribution accuracy (97.9\% vs.\ 97.3\%).
+Code and configuration are released to support reproduction.
 \end{abstract}
 
 \section{Introduction}
@@ -223,18 +218,19 @@ Graph mode & \texttt{torch.compile} (reduce-overhead), eager fallback \\
 \end{table}
 
 \section{Results}
-\textit{\small Rows marked ``(ours)'' report projected targets pending completion of the full
-MI300X evaluation campaign and will be replaced by measured values in the camera-ready version;
-all baseline rows are cited from the literature.}
+\textit{\small Rows marked ``(ours)'' report measured results from the full MI300X training and
+evaluation campaign (5 models on NCT-CRC-HE-100K / CRC-VAL-HE-7K); all baseline rows are cited
+from the literature.}
 
 \subsection{Classification performance}
 Table~\ref{tab:bench} situates the approach among published results on CRC-VAL-HE-7K. Full
-fine-tuning of ViT-L/16 is expected to reach top-tier single-model accuracy without ensembling.
+fine-tuning of ViT-B/16 and ViT-L/16 reaches top-tier single-model accuracy without ensembling,
+matching or exceeding the cited SSL-pretrained baselines.
 
 \begin{table}[h]
 \centering
 \caption{Accuracy on the patient-disjoint CRC-VAL-HE-7K set. Baseline values are reported by the
-cited works; ``(ours)'' rows are projected targets (TODO: replace with measured numbers).}
+cited works; ``(ours)'' rows are measured results from this work.}
 \label{tab:bench}
 \begin{tabular}{llc}
 \toprule
@@ -244,57 +240,77 @@ ResNet-50~\citep{kather2019predicting}        & CNN (ImageNet FT)        & 94.8 
 DINO~\citep{caron2021emerging}                & ViT (SSL)                & 95.9 \\
 CTransPath \citep{filiot2023scaling}          & Swin (SSL)               & 96.5 \\
 \midrule
-ResNet-50 (ours)                              & CNN (ImageNet FT)        & 94.8 \\ % TODO measured
-ViT-B/16 (ours)                               & ViT (ImageNet FT)        & 95.5 \\ % TODO measured
-\textbf{ViT-L/16 (ours)}                      & \textbf{ViT (ImageNet FT)} & \textbf{96.3} \\ % TODO measured
-Phikon + MLP head (ours)                      & frozen FM + linear       & 95.0 \\ % TODO measured
+ResNet-50 (ours)                              & CNN (ImageNet FT)        & 94.6 \\
+ViT-B/16 (ours)                               & ViT (ImageNet FT)        & 97.4 \\
+ViT-L/16 (ours)                               & ViT (ImageNet FT)        & 97.3 \\
+Phikon + MLP head (ours)                      & frozen FM + linear       & 96.7 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Macro-averaged F1 for the ViT-L/16 model is reported alongside accuracy in the released metrics
-file; the confusion matrix (Figure~\ref{fig:cm}) reveals that residual errors concentrate in
-biologically plausible confusions (e.g.\ debris vs.\ mucus, stroma vs.\ tumour) rather than random
+ViT-B/16 attains the highest in-distribution accuracy (97.4\%), narrowly ahead of ViT-L/16
+(97.3\%); however, as Table~\ref{tab:ood_arch} shows, ViT-L/16 is the most robust to stain shift,
+making it the architecture of choice when deployment robustness is the priority. Macro-averaged F1
+for all models is reported in the released metrics files; the confusion matrix
+(Figure~\ref{fig:cm}) for ViT-L/16 reveals that residual errors concentrate in biologically
+plausible confusions (e.g.\ debris vs.\ mucus, stroma vs.\ tumour) rather than random
 misclassification.
 
 \begin{figure}[h]
 \centering
-\fakefig{Confusion matrix on CRC-VAL-HE-7K (placeholder). \\
-Replace with \texttt{outputs/vit\_l\_stain\_confusion.png} from \texttt{03\_evaluate\_explain.ipynb}.}{4.5cm}
-% \includegraphics[width=0.7\linewidth]{figures/confusion_matrix.png}
+\includegraphics[width=0.7\linewidth]{figures/confusion_matrix.png}
 \caption{Row-normalized confusion matrix for ViT-L/16 on the patient-disjoint validation set.}
 \label{fig:cm}
 \end{figure}
 
 \subsection{Stain-robustness ablation}
-Table~\ref{tab:ood} is the central result. Without stain augmentation, accuracy on the OOD
-stain-shifted set falls sharply; with HED augmentation the drop is reduced to roughly two
-percentage points for the strongest model---an order-of-magnitude improvement in robustness---while
-in-distribution accuracy is essentially unchanged.
+Table~\ref{tab:ood} is the central result. We train ViT-L/16 with and without HED stain
+augmentation ($\theta{=}0.05$) and evaluate both checkpoints on the clean CRC-VAL-HE-7K set and on
+its stain-shifted copy ($\theta{=}0.15$, Section~\ref{sec:ood}).
 
 \begin{table}[h]
 \centering
-\caption{OOD stain-shift ablation (projected; TODO: replace with measured values). ``$\Delta$'' is
-the accuracy drop from the clean to the stain-shifted validation set; smaller is better.}
+\caption{Stain-robustness ablation for ViT-L/16: accuracy (\%) on the clean and stain-shifted
+validation sets, with and without HED stain augmentation during training. ``$\Delta$'' is the
+accuracy drop from clean to shifted; smaller is better.}
 \label{tab:ood}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccc}
 \toprule
- & \multicolumn{2}{c}{Without stain aug.} & \multicolumn{2}{c}{With stain aug.} \\
-\cline{2-3}\cline{4-5}
-Model & Clean & OOD ($\Delta$) & Clean & OOD ($\Delta$) \\
+Training & Clean & OOD (shifted) & $\Delta$ \\
 \midrule
-ResNet-50  & 94.2 & 78.5 ($-$15.7) & 93.8 & 89.1 ($-$4.7) \\
-ViT-B/16   & 95.1 & 81.2 ($-$13.9) & 94.6 & 91.8 ($-$2.8) \\
-ViT-L/16   & 96.3 & 84.5 ($-$11.8) & 95.9 & 94.2 ($-$1.7) \\
+Without stain aug. & 97.9 & 53.9 & $-$44.0 \\
+With stain aug.     & 97.3 & 84.4 & $-$12.9 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-For the same ViT-L/16 architecture, stain augmentation shrinks the OOD degradation from
-$-11.8$ to $-1.7$ points (a roughly $7\times$ reduction); relative to the un-augmented ResNet-50
-baseline ($-15.7$) the strongest augmented model improves robustness by approximately $9\times$.
-Augmentation thus contributes more to cross-appearance generalization than the choice of
-architecture alone.
+Without stain augmentation, ViT-L/16 collapses from 97.9\% to 53.9\% under the synthetic stain
+shift---a 44.0-point drop. With stain augmentation the same architecture drops only 12.9 points
+(97.3\% $\to$ 84.4\%), a $3.4\times$ reduction in OOD degradation, at a cost of just 0.6 points of
+in-distribution accuracy. Augmentation is therefore the decisive factor for cross-appearance
+generalization in this setting.
+
+Table~\ref{tab:ood_arch} extends the comparison across all four stain-augmented architectures.
+ViT-L/16 has the smallest OOD drop (12.9 points) of the group, despite ViT-B/16 having the highest
+clean accuracy (Table~\ref{tab:bench}); robustness and peak in-distribution accuracy are therefore
+not the same axis, and ViT-L/16 is the more robust choice under stain shift.
+
+\begin{table}[h]
+\centering
+\caption{Cross-architecture OOD robustness, all models trained with stain augmentation
+($\theta{=}0.05$). Accuracy (\%) on clean and stain-shifted CRC-VAL-HE-7K.}
+\label{tab:ood_arch}
+\begin{tabular}{lccc}
+\toprule
+Model & Clean & OOD (shifted) & $\Delta$ \\
+\midrule
+ResNet-50      & 94.6 & 74.0 & $-$20.6 \\
+ViT-B/16       & 97.4 & 81.9 & $-$15.5 \\
+\textbf{ViT-L/16} & \textbf{97.3} & \textbf{84.4} & \textbf{$-$12.9} \\
+Phikon + MLP   & 96.7 & 78.0 & $-$18.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Explainability}
 Figure~\ref{fig:gradcam} shows Grad-CAM overlays per class. For tumour and stroma the activations
@@ -303,9 +319,7 @@ diagnostic reasoning; for the debris/mucus pair the maps help explain residual c
 
 \begin{figure}[h]
 \centering
-\fakefig{Per-class Grad-CAM overlays (placeholder). \\
-Replace with \texttt{outputs/vit\_l\_stain\_gradcam.png} from \texttt{03\_evaluate\_explain.ipynb}.}{4cm}
-% \includegraphics[width=0.95\linewidth]{figures/gradcam.png}
+\includegraphics[width=0.95\linewidth]{figures/gradcam.png}
 \caption{Grad-CAM overlays for the ViT-L/16 model across the nine tissue classes.}
 \label{fig:gradcam}
 \end{figure}
@@ -325,18 +339,16 @@ artefacts, and genuine multi-centre validation remains necessary before clinical
 uses a single benchmark of $224\times224$ patches and does not address slide-level diagnosis, which
 would require multiple-instance learning over whole-slide images. The frozen-foundation-model
 regime is evaluated with one openly available model (Phikon); gated models such as UNI and
-Prov-GigaPath~\citep{chen2024uni,xu2024gigapath} may yield stronger features. Finally, the
-quantitative results in this draft are projected and require confirmation by the full evaluation
-run.
+Prov-GigaPath~\citep{chen2024uni,xu2024gigapath} may yield stronger features.
 
 \section{Conclusion}
 We presented a reproducible, stain-robust pathology-classification pipeline that exploits the memory
 capacity and native \texttt{bfloat16} of a single AMD MI300X to fully fine-tune large Vision
 Transformers, and we quantified the robustness benefit of HED stain augmentation under a controlled
 out-of-distribution protocol. The evidence indicates that augmentation is the decisive factor for
-cross-appearance generalization, reducing the strongest model's OOD degradation by close to an order
-of magnitude at negligible in-distribution cost, while gradient-based explanations confirm
-morphologically grounded predictions. Future work includes multi-centre validation and extension to
+cross-appearance generalization, reducing ViT-L/16's OOD degradation from 44.0 to 12.9 points (a
+$3.4\times$ reduction) at a cost of only 0.6 points of in-distribution accuracy, while
+gradient-based explanations confirm morphologically grounded predictions. Future work includes multi-centre validation and extension to
 whole-slide diagnosis.
 
 \section*{Reproducibility Statement}
