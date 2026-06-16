@@ -8,7 +8,8 @@ numbers are measured (see `main.tex` / `/workspace/shared/ft004/outputs/*_metric
 ## 1. Title
 - **Stain-Robust Histology Classification at Scale**
 - Full fine-tuning of Vision Transformers on a single AMD MI300X
-- Team FINETUNING_004 — AMD Developer Challenge / TCS Ultimatix Hackathon
+- P. Mahipal Rao, Sai Kalyan Guddeti — Team FINETUNING_004
+- AMD Developer Challenge / TCS Ultimatix Hackathon
 
 ## 2. Elevator Pitch (What / Why / How)
 - **What**: A 9-class colorectal-tissue classifier (NCT-CRC-HE-100K) that stays accurate
