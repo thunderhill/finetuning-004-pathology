@@ -11,3 +11,9 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .venv/
+
+# LaTeX build artifacts
+paper/main.aux
+paper/main.blg
+paper/main.log
+paper/main.out
