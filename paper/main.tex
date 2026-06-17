@@ -27,8 +27,11 @@
 Full Fine-Tuning of Vision Transformers on a Single AMD MI300X}}
 
 \author{
-P.~Mahipal Rao \and Sai Kalyan Guddeti\\
-\texttt{p.mahipal@tcs.com} \quad \texttt{saikalyan.guddeti@tcs.com}\\
+P.~Mahipal Rao\\
+\texttt{p.mahipal@tcs.com}
+\and
+Sai Kalyan Guddeti\\
+\texttt{saikalyan.guddeti@tcs.com}\\[0.3em]
 \textit{AMD Developer Challenge}
 }
 \date{\today}
@@ -47,14 +50,19 @@ patient-disjoint CRC-VAL-HE-7K validation set, and we contrast two transfer-lear
 (i) end-to-end fine-tuning of ImageNet-pretrained convolutional and Vision-Transformer (ViT)
 backbones, and (ii) a frozen pathology foundation model (Phikon) with a trainable classification
 head. All training runs in native \texttt{bfloat16} without loss scaling on a single AMD MI300X
-GPU (192\,GB HBM3), enabling full fine-tuning of a 307M-parameter ViT-L/16 at large batch size
+GPU (192\,GB HBM3), enabling full fine-tuning of a 303M-parameter ViT-L/16 at large batch size
 without gradient checkpointing or layer freezing, with graph compilation via
 \texttt{torch.compile}. To quantify deployment robustness we introduce a controlled
 out-of-distribution (OOD) stain-shift protocol and report the resulting accuracy degradation
 with and without stain augmentation. We further provide gradient-based (Grad-CAM) explanations to
 verify that predictions attend to clinically meaningful structures. Our results show that
-stain augmentation reduces the OOD accuracy drop of ViT-L/16 from 44.0 to 12.9 points (a
-$3.4\times$ reduction), with negligible cost to in-distribution accuracy (97.9\% vs.\ 97.3\%).
+stain augmentation recovers 30.5 points of out-of-distribution accuracy for ViT-L/16
+($53.9\%\rightarrow84.4\%$)---equivalently, it shrinks the clean-to-OOD accuracy drop from
+44.0 to 12.9 points, a $3.4\times$ smaller robustness gap---at negligible cost to
+in-distribution accuracy (97.9\% vs.\ 97.3\%). The learned invariance further transfers to a
+mechanistically disjoint corruption family (JPEG compression, blur, downscaling, colour
+casts), where accuracy falls only 4.6 points. All five model configurations train end-to-end
+on a single MI300X, and we report measured throughput and peak-memory figures.
 Code and configuration are released to support reproduction.
 \end{abstract}
 
@@ -85,9 +93,10 @@ in native \texttt{bfloat16} without gradient checkpointing or freezing.
 (1) A modular, reproducible pipeline for stain-robust nine-class colorectal histology
 classification that unifies full fine-tuning and frozen-foundation-model regimes behind a single
 model factory. (2) A controlled OOD stain-shift evaluation protocol that isolates the effect of
-stain augmentation on deployment robustness, demonstrating a $3.4\times$ reduction in OOD
-accuracy degradation (44.0 $\to$ 12.9 points) at a cost of only 0.6 points of
-in-distribution accuracy. (3) A systems account of training large ViTs in
+stain augmentation on deployment robustness, recovering 30.5 points of OOD accuracy
+($53.9\%\rightarrow84.4\%$; a $3.4\times$ smaller clean-to-OOD gap) at a cost of only 0.6
+points of in-distribution accuracy, and verifying that the gain transfers to a disjoint
+corruption family. (3) A systems account of training large ViTs in
 native \texttt{bfloat16} on a single MI300X, including the elimination of loss scaling and the use
 of graph compilation. (4) Gradient-based explanations linking predictions to tissue morphology.
 
@@ -128,7 +137,11 @@ uses the official CRC-VAL-HE-7K set (7{,}180 patches from 50 patients disjoint f
 cohort), which provides an honest estimate of generalization to unseen patients. The released
 patches are Macenko-normalized at source; we therefore rely on \emph{augmentation} to simulate the
 stain diversity that normalization removes, and we construct a synthetic OOD set to probe
-robustness (Section~\ref{sec:ood}).
+robustness (Section~\ref{sec:ood}). Even after this normalization the benchmark retains a strong
+colour bias: a logistic-regression classifier using only per-image colour statistics (the mean and
+standard deviation of each RGB channel, six features in total) attains 72\% accuracy on the
+nine-class validation set---far above the 11\% chance rate---confirming that colour alone is a
+powerful shortcut on this dataset and motivating explicitly colour-invariant training.
 
 \section{Methods}
 
@@ -164,7 +177,7 @@ architecture~\citep{amd2023cdna3}. Because \texttt{bfloat16} shares the 8-bit ex
 \texttt{float32}, it tolerates wide dynamic range without the underflow that necessitates loss
 scaling in \texttt{float16}~\citep{micikevicius2018mixed}; we therefore use \texttt{autocast} in
 \texttt{bfloat16} with \emph{no} gradient scaler, simplifying the loop and removing a common source
-of NaNs. The capacity advantage allows full fine-tuning of the 307M-parameter ViT-L/16 at batch
+of NaNs. The capacity advantage allows full fine-tuning of the 303M-parameter ViT-L/16 at batch
 size up to 512 without gradient checkpointing or layer freezing. We optimize with
 AdamW~\citep{loshchilov2019decoupled} under a layer-wise learning-rate scheme (the head learns at
 $10\times$ the backbone rate to limit catastrophic forgetting), a cosine schedule with linear
@@ -324,10 +337,26 @@ Phikon + MLP   & 96.7 & 78.0 & $-$18.6 \\
 \end{tabular}
 \end{table}
 
+\paragraph{Robustness to a disjoint corruption family.}
+A natural objection is that the OOD set above perturbs the same HED axis used for augmentation, so
+the gain might reflect inversion of the training transform rather than genuine invariance. To test
+this, we evaluate the stain-augmented ViT-L/16 on a second OOD set generated by a mechanistically
+disjoint corruption family---JPEG compression, Gaussian blur, resolution downscaling, RGB-space
+colour casts, and gamma shifts---none of which appears during training and none of which operates in
+HED space. Accuracy falls only 4.6 points ($97.3\%\rightarrow92.7\%$), well inside the
+12.9-point HED-shift drop, indicating that the learned invariance generalizes beyond the augmented
+axis to unseen acquisition artefacts rather than merely undoing the training perturbation.
+
 \subsection{Explainability}
-Figure~\ref{fig:gradcam} shows Grad-CAM overlays per class. For tumour and stroma the activations
-concentrate on epithelial regions and connective-tissue boundaries respectively, consistent with
-diagnostic reasoning; for the debris/mucus pair the maps help explain residual confusions.
+Figure~\ref{fig:gradcam} shows Grad-CAM overlays for one representative patch per class. For tumour
+(TUM) the activation concentrates on the crowded epithelial nuclei that define adenocarcinoma, and
+for stroma (STR) it follows the elongated connective-tissue bands rather than the surrounding
+background---consistent with the structures a pathologist uses to separate the two, and with the
+confusion matrix, where the largest residual error is the biologically adjacent STR$\to$MUS
+confusion (Figure~\ref{fig:cm}). Adipose and background attributions are diffuse, as expected for
+near-textureless classes, while lymphocyte maps highlight dense small-nucleus clusters. The overlays
+thus indicate that high-confidence predictions rest on morphological evidence rather than staining
+colour or edge artefacts, supporting the intended effect of the augmentation.
 
 \begin{figure}[h]
 \centering
@@ -338,16 +367,35 @@ diagnostic reasoning; for the debris/mucus pair the maps help explain residual c
 
 \subsection{Systems perspective}
 Native \texttt{bfloat16} removes loss scaling and the associated NaN debugging, and graph
-compilation~\citep{ansel2024pytorch2} reduces Python dispatch overhead. The 192\,GB HBM3 capacity
-is the enabling factor: full fine-tuning of ViT-L/16 at batch 512 fits comfortably, whereas a
-80\,GB-class accelerator would require gradient checkpointing or reduced batch size. We report
-peak memory and throughput in the released logs.
+compilation~\citep{ansel2024pytorch2} reduces Python dispatch overhead. Table~\ref{tab:systems}
+reports measured training-step performance for the 303M-parameter ViT-L/16 at batch size 512 in
+native \texttt{bfloat16}. The 192\,GB HBM3 capacity is the enabling factor: a full training step at
+batch 512 reaches a peak memory reservation of 90.4\,GB, which already exceeds the 80\,GB capacity
+of a contemporary high-end accelerator---fitting the same configuration elsewhere would force
+gradient checkpointing or a smaller batch. Enabling \texttt{torch.compile} (reduce-overhead) raises
+throughput from 640 to 725 images/s (a $1.13\times$ speedup) at no additional memory cost.
+
+\begin{table}[h]
+\centering
+\caption{Measured MI300X training-step performance: ViT-L/16 (303M parameters), batch 512, native
+\texttt{bfloat16}, $224\times224$ inputs. Peak HBM is the maximum reserved memory over the step.}
+\label{tab:systems}
+\begin{tabular}{lccc}
+\toprule
+Execution mode & Throughput (img/s) & Step time (ms) & Peak HBM (GB) \\
+\midrule
+Eager                       & 640 & 800 & 90.4 \\
+\texttt{torch.compile}      & 725 & 706 & 89.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Discussion and Limitations}
 \label{sec:limitations}
-Our robustness claim rests on a \emph{synthetic} stain shift; while HED perturbation is an accepted
-proxy for inter-laboratory variation, it cannot fully reproduce scanner- and protocol-specific
-artefacts, and genuine multi-centre validation remains necessary before clinical use. The study
+Our robustness claim rests on \emph{synthetic} corruptions; while HED perturbation is an accepted
+proxy for inter-laboratory variation and our second, disjoint corruption family probes a different
+axis, neither can fully reproduce scanner- and protocol-specific artefacts, and genuine multi-centre
+validation remains necessary before clinical use. The study
 uses a single benchmark of $224\times224$ patches and does not address slide-level diagnosis, which
 would require multiple-instance learning over whole-slide images. The frozen-foundation-model
 regime is evaluated with one openly available model (Phikon); gated models such as UNI and
@@ -358,10 +406,12 @@ We presented a reproducible, stain-robust pathology-classification pipeline that
 capacity and native \texttt{bfloat16} of a single AMD MI300X to fully fine-tune large Vision
 Transformers, and we quantified the robustness benefit of HED stain augmentation under a controlled
 out-of-distribution protocol. The evidence indicates that augmentation is the decisive factor for
-cross-appearance generalization, reducing ViT-L/16's OOD degradation from 44.0 to 12.9 points (a
-$3.4\times$ reduction) at a cost of only 0.6 points of in-distribution accuracy, while
-gradient-based explanations confirm morphologically grounded predictions. Future work includes multi-centre validation and extension to
-whole-slide diagnosis.
+cross-appearance generalization, recovering 30.5 points of ViT-L/16's out-of-distribution accuracy
+($53.9\%\rightarrow84.4\%$; equivalently a $3.4\times$ smaller clean-to-OOD gap) at a cost of only
+0.6 points of in-distribution accuracy, with the gain transferring to a disjoint corruption family,
+while gradient-based explanations confirm morphologically grounded predictions. Future work includes
+multi-centre validation with real inter-laboratory stain diversity and extension to slide-level
+diagnosis via multiple-instance learning over whole-slide images.
 
 \section*{Reproducibility Statement}
 The complete pipeline---data ingestion, augmentation, model factory, native-\texttt{bfloat16}

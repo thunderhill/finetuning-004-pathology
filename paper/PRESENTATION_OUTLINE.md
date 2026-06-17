@@ -25,6 +25,10 @@ numbers are measured (see `main.tex` / `/workspace/shared/ft004/outputs/*_metric
   cohort, then degrade sharply on data from another institution.
 - Root cause: differences in staining reagents, protocols, and scanner colour response —
   not a difference in the underlying tissue.
+- **We quantified the bias directly**: a logistic-regression classifier using only
+  per-image colour statistics (mean + std of RGB, 6 features) reaches **72% accuracy** on
+  the 9-class validation set — vs 11% chance. Colour alone is a powerful shortcut, so a
+  model that *isn't* colour-invariant is silently relying on it.
 - Existing fixes (stain normalization at inference time) add a fragile preprocessing step
   and don't generalize to unseen appearances.
 - **Gap**: few public pipelines *quantify* how much stain augmentation actually helps,
@@ -103,13 +107,20 @@ numbers are measured (see `main.tex` / `/workspace/shared/ft004/outputs/*_metric
 | Without stain aug | 97.9% | 53.9% | **−44.0 pts** |
 | With stain aug | 97.3% | 84.4% | **−12.9 pts** |
 
-- **Stain augmentation cuts the OOD accuracy drop by 3.4×** (44.0 → 12.9 points) for a
-  cost of only 0.6 points of in-distribution accuracy.
+- **Headline (state it both ways):** stain augmentation **recovers 30.5 points of OOD
+  accuracy** (53.9% → 84.4%) — equivalently a **3.4× smaller** clean-to-OOD gap (44.0 →
+  12.9 pts) — at a cost of only 0.6 points of clean accuracy.
+  - *(Say "30.5 points recovered" first; "3.4×" is the ratio of the drops, not an
+    accuracy multiplier — leading with the absolute number pre-empts the obvious
+    push-back.)*
+- **Not circular:** on a mechanistically *different* corruption family (JPEG + blur +
+  downscaling + RGB colour cast + gamma — never seen in training, not HED-based), the same
+  model drops only **4.6 points** (97.3 → 92.7). The invariance generalizes; it isn't just
+  undoing the training augmentation.
 - Across all 4 stain-augmented architectures, ViT-L/16 has the smallest OOD drop
   (12.9 pts), despite ViT-B/16 having marginally higher clean accuracy — robustness and
   peak accuracy are different axes.
-- Suggested visual: `outputs/vit_l_stain_confusion.png` or a simple before/after bar
-  chart of the table above.
+- Suggested visual: `paper/figures/ablation_bar.png` (before/after bar chart).
 
 ## 12. Explainability — Grad-CAM
 - Per-class Grad-CAM overlays (`outputs/vit_l_stain_gradcam.png`) show activations
@@ -118,14 +129,21 @@ numbers are measured (see `main.tex` / `/workspace/shared/ft004/outputs/*_metric
 - Available live in the Gradio demo for any uploaded patch.
 
 ## 13. Systems / Performance on MI300X
-- Native `bfloat16` training — no gradient scaler, no NaN-debugging loop common with
-  `float16`
-- `torch.compile` (reduce-overhead) for ViTs; eager fallback for BatchNorm models
-- 192 GB HBM3 enables **full fine-tuning of a 307M-parameter ViT-L/16 at batch size up to
-  512** with no gradient checkpointing or layer freezing — would require checkpointing or
-  reduced batch size on an 80GB-class accelerator
+*(all measured on the MI300X; see `results/mi300x_benchmark.json`)*
+
+| ViT-L/16, batch 512, bf16 | Throughput | Step time | Peak HBM |
+|---|---|---|---|
+| Eager | 640 img/s | 800 ms | 90.4 GB |
+| `torch.compile` (reduce-overhead) | **725 img/s** | 706 ms | 89.6 GB |
+
+- **The 90.4 GB peak at batch 512 is the whole point**: it *exceeds* the 80 GB capacity of
+  a contemporary high-end accelerator — the same full fine-tune would force gradient
+  checkpointing or a smaller batch elsewhere. The MI300X's 192 GB HBM3 just absorbs it.
+- `torch.compile` gives a **1.13× throughput speedup at zero extra memory**.
+- Native `bfloat16` — no gradient scaler, no NaN-debugging loop common with `float16`.
+- 303M-parameter ViT-L/16 fully fine-tuned (all params), no layer freezing.
 - All 5 model configs (12 epochs each) trained and evaluated end-to-end during the
-  hackathon window on a single GPU
+  hackathon window on a single GPU.
 
 ## 14. Expected Impact
 - A reproducible, quantified recipe for making pathology classifiers robust to the #1
@@ -138,7 +156,8 @@ numbers are measured (see `main.tex` / `/workspace/shared/ft004/outputs/*_metric
 - Single unified model factory spanning full fine-tuning *and* frozen-foundation-model
   regimes — apples-to-apples comparison.
 - Controlled, reproducible OOD stain-shift protocol with a direct before/after
-  measurement (not just a claim).
+  measurement (not just a claim) — plus a **second, disjoint corruption family** that rules
+  out the "you only undo your own augmentation" objection (4.6-pt drop).
 - Demonstrates that a single MI300X removes the memory constraint that normally forces
   ViT-L fine-tuning into checkpointing/freezing tradeoffs.
 - Grad-CAM auditing built into both the eval pipeline and the live demo.

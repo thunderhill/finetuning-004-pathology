@@ -1,0 +1,9 @@
+{
+  "features": "per-image mean+std of RGB (6-dim)",
+  "classifier": "standardized logistic regression",
+  "train_sample_per_class": 600,
+  "val_n": 7180,
+  "chance_pct": 11.1,
+  "accuracy": 72.1,
+  "macro_f1": 63.9
+}
