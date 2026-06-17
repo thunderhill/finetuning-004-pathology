@@ -85,7 +85,9 @@ in native \texttt{bfloat16} without gradient checkpointing or freezing.
 (1) A modular, reproducible pipeline for stain-robust nine-class colorectal histology
 classification that unifies full fine-tuning and frozen-foundation-model regimes behind a single
 model factory. (2) A controlled OOD stain-shift evaluation protocol that isolates the effect of
-stain augmentation on deployment robustness. (3) A systems account of training large ViTs in
+stain augmentation on deployment robustness, demonstrating a $3.4\times$ reduction in OOD
+accuracy degradation (44.0 $\to$ 12.9 points) at a cost of only 0.6 points of
+in-distribution accuracy. (3) A systems account of training large ViTs in
 native \texttt{bfloat16} on a single MI300X, including the elimination of loss scaling and the use
 of graph compilation. (4) Gradient-based explanations linking predictions to tissue morphology.
 
@@ -238,7 +240,7 @@ Method & Architecture & Accuracy (\%) \\
 \midrule
 ResNet-50~\citep{kather2019predicting}        & CNN (ImageNet FT)        & 94.8 \\
 DINO~\citep{caron2021emerging}                & ViT (SSL)                & 95.9 \\
-CTransPath \citep{filiot2023scaling}          & Swin (SSL)               & 96.5 \\
+CTransPath \citep{wang2022ctranspath}         & Swin (SSL)               & 96.5 \\
 \midrule
 ResNet-50 (ours)                              & CNN (ImageNet FT)        & 94.6 \\
 ViT-B/16 (ours)                               & ViT (ImageNet FT)        & 97.4 \\
@@ -290,6 +292,15 @@ shift---a 44.0-point drop. With stain augmentation the same architecture drops o
 in-distribution accuracy. Augmentation is therefore the decisive factor for cross-appearance
 generalization in this setting.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.82\linewidth]{figures/ablation_bar.png}
+\caption{Clean vs.\ OOD accuracy for ViT-L/16 trained with and without HED stain augmentation.
+Stain augmentation reduces the OOD accuracy drop from 44.0 to 12.9 points---a $3.4\times$
+reduction---at the cost of only 0.6 points of in-distribution accuracy.}
+\label{fig:ablation}
+\end{figure}
+
 Table~\ref{tab:ood_arch} extends the comparison across all four stain-augmented architectures.
 ViT-L/16 has the smallest OOD drop (12.9 points) of the group, despite ViT-B/16 having the highest
 clean accuracy (Table~\ref{tab:bench}); robustness and peak in-distribution accuracy are therefore
@@ -298,7 +309,8 @@ not the same axis, and ViT-L/16 is the more robust choice under stain shift.
 \begin{table}[h]
 \centering
 \caption{Cross-architecture OOD robustness, all models trained with stain augmentation
-($\theta{=}0.05$). Accuracy (\%) on clean and stain-shifted CRC-VAL-HE-7K.}
+($\theta{=}0.05$). Accuracy (\%) on clean and stain-shifted CRC-VAL-HE-7K. Bold indicates
+the most OOD-robust model.}
 \label{tab:ood_arch}
 \begin{tabular}{lccc}
 \toprule

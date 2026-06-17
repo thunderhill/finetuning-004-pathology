@@ -1,4 +1,4 @@
-\begin{thebibliography}{23}
+\begin{thebibliography}{24}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -167,6 +167,14 @@ Abhishek Vahadane, Tingying Peng, Amit Sethi, Shadi Albarqouni, Lichao Wang,
   for histological images.
 \newblock \emph{IEEE Transactions on Medical Imaging}, 35\penalty0
   (8):\penalty0 1962--1971, 2016.
+
+\bibitem[Wang et~al.(2022)Wang, Yang, Zhang, Wang, Zhang, Yang, Huang, and
+  Han]{wang2022ctranspath}
+Xiyue Wang, Sen Yang, Jun Zhang, Minghui Wang, Jing Zhang, Wei Yang, Junzhou
+  Huang, and Xiao Han.
+\newblock Transformer-based unsupervised contrastive learning for
+  histopathological image classification.
+\newblock \emph{Medical Image Analysis}, 81:\penalty0 102559, 2022.
 
 \bibitem[Wightman et~al.(2021)Wightman, Touvron, and
   J{\'e}gou]{wightman2021resnet}
